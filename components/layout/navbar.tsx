@@ -21,11 +21,8 @@ export default function Navbar() {
                 <div className="flex justify-between h-16">
                     <div className="flex items-center">
                         <Link href="/" className="flex-shrink-0 flex items-center gap-2">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
-                                <Calendar className="w-5 h-5" />
-                            </div>
                             <span className="font-bold text-xl tracking-tight text-slate-900 dark:text-white">
-                                The 1% Club
+                                The <span className="text-red-500">1%</span> Club
                             </span>
                         </Link>
                     </div>

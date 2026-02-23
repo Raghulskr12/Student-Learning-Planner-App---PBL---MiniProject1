@@ -46,15 +46,12 @@ export default function Sidebar() {
             <div className="flex items-center justify-between p-4 border-b border-slate-200/50 dark:border-slate-800/50">
                 {!collapsed && (
                     <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white shrink-0">
-                            <Calendar className="w-4 h-4" />
-                        </div>
-                        <span className="font-bold text-lg tracking-tight">The 1% Club</span>
+                        <span className="font-bold text-lg tracking-tight">The <span className="text-red-500">1%</span> Club</span>
                     </div>
                 )}
                 {collapsed && (
-                    <div className="w-8 h-8 mx-auto rounded-lg bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white shrink-0">
-                        <Calendar className="w-4 h-4" />
+                    <div className="w-8 h-8 mx-auto rounded-lg flex items-center justify-center shrink-0">
+                        <span className="font-bold text-red-500">1%</span>
                     </div>
                 )}
                 <button

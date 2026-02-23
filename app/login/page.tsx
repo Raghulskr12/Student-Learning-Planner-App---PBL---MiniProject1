@@ -33,9 +33,9 @@ export default function LoginPage() {
 
                 <div className="text-center mb-10">
                     <Link href="/" className="inline-flex items-center justify-center gap-2 mb-6">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white shadow-lg">
-                            <Calendar className="w-6 h-6" />
-                        </div>
+                        <span className="font-bold text-4xl tracking-tight text-slate-900 dark:text-white">
+                            The <span className="text-red-500">1%</span> Club
+                        </span>
                     </Link>
                     <h2 className="text-3xl font-extrabold tracking-tight">Welcome Back</h2>
                     <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
