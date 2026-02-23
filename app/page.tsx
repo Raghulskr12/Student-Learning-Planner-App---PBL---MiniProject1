@@ -168,7 +168,7 @@ export default function Home() {
           >
             Create Your Free Account
           </Link>
-          <p className="mt-8 text-slate-500 text-sm">© 2026 StudySync. All rights reserved.</p>
+          <p className="mt-8 text-slate-500 text-sm">© 2026 The 1% Club. All rights reserved.</p>
         </div>
       </footer>
     </main>

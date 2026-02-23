@@ -7,7 +7,7 @@ import Navbar from "@/components/layout/navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "StudySync - Student Daily Planner",
+  title: "The 1% Club - Student Daily Planner",
   description: "Plan your day, track study hours, master your future.",
 };
 

@@ -25,7 +25,7 @@ export default function Navbar() {
                                 <Calendar className="w-5 h-5" />
                             </div>
                             <span className="font-bold text-xl tracking-tight text-slate-900 dark:text-white">
-                                Study<span className="text-blue-500">Sync</span>
+                                The 1% Club
                             </span>
                         </Link>
                     </div>

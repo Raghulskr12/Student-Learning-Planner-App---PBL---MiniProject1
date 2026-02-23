@@ -24,8 +24,6 @@ import { useState } from 'react';
 const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Daily Planner', href: '/dashboard/daily-planner', icon: CalendarDays },
-    { name: 'Weekly Planner', href: '/dashboard/weekly-planner', icon: CalendarCheck },
-    { name: 'Monthly Planner', href: '/dashboard/monthly-planner', icon: Calendar },
     { name: 'Study Timer', href: '/dashboard/study-timer', icon: Timer },
     { name: 'Analytics', href: '/dashboard/analytics', icon: BarChartBig },
     { name: 'Subjects', href: '/dashboard/subjects', icon: BookOpen },
@@ -51,7 +49,7 @@ export default function Sidebar() {
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white shrink-0">
                             <Calendar className="w-4 h-4" />
                         </div>
-                        <span className="font-bold text-lg tracking-tight">StudySync</span>
+                        <span className="font-bold text-lg tracking-tight">The 1% Club</span>
                     </div>
                 )}
                 {collapsed && (
