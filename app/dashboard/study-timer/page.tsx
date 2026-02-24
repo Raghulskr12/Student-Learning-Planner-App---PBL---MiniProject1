@@ -1,9 +1,20 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Play, Pause, RotateCcw, Settings, CheckCircle2, BookOpen, Volume2, VolumeX, Coffee } from 'lucide-react';
+import { Play, Pause, RotateCcw, Settings, CheckCircle2, BookOpen, Volume2, VolumeX, Coffee, Maximize, Minimize } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import clsx from 'clsx';
+import { AnimatePresence } from 'framer-motion';
+
+const QUOTES = [
+    "The secret of your future is hidden in your daily routine.",
+    "Success is the sum of small efforts, repeated day in and day out.",
+    "Don't stop when you're tired. Stop when you're done.",
+    "Focus on being productive instead of busy.",
+    "You don't have to be great to start, but you have to start to be great.",
+    "The way to get started is to quit talking and begin doing.",
+    "Discipline is choosing between what you want now and what you want most."
+];
 
 export default function StudyTimer() {
     const [selectedMinutes, setSelectedMinutes] = useState(25);
@@ -13,7 +24,11 @@ export default function StudyTimer() {
     const [soundEnabled, setSoundEnabled] = useState(true);
     const [mode, setMode] = useState<'focus' | 'break'>('focus');
 
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [currentQuote, setCurrentQuote] = useState(QUOTES[0]);
+
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const containerRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         // Create audio element for notification
@@ -21,9 +36,37 @@ export default function StudyTimer() {
         audioRef.current.volume = 0.5;
     }, []);
 
+    const toggleFullscreen = () => {
+        if (!document.fullscreenElement) {
+            containerRef.current?.requestFullscreen().catch(err => {
+                console.error(`Error attempting to enable fullscreen: ${err.message}`);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    };
+
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    }, []);
+
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
     const progress = ((selectedMinutes * 60 - timeLeft) / (selectedMinutes * 60)) * 100;
+
+    const toggleTimer = () => {
+        if (!isActive) {
+            setCurrentQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+            if (mode === 'focus' && !isFullscreen) {
+                toggleFullscreen();
+            }
+        }
+        setIsActive(!isActive);
+    };
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -57,7 +100,32 @@ export default function StudyTimer() {
     };
 
     return (
-        <div className="space-y-6 flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] py-6">
+        <div ref={containerRef} className={clsx(
+            "space-y-6 flex flex-col items-center justify-center py-6 relative transition-all duration-500",
+            isFullscreen ? "fixed inset-0 z-[100] bg-slate-50 dark:bg-slate-950 px-4" : "min-h-[calc(100vh-8rem)]"
+        )}>
+            {/* Background elements for fullscreen mode to keep it pretty */}
+            {isFullscreen && (
+                <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+                    <div className="absolute top-0 -left-64 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-3xl animate-blob"></div>
+                    <div className="absolute bottom-0 -right-64 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+                </div>
+            )}
+
+            <AnimatePresence mode="wait">
+                {isFullscreen && isActive && mode === 'focus' && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="absolute top-16 left-0 right-0 max-w-2xl mx-auto text-center px-4"
+                    >
+                        <p className="text-xl md:text-2xl font-medium italic text-slate-700 dark:text-slate-300 leading-relaxed">
+                            "{currentQuote}"
+                        </p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
             <div className="text-center">
                 <h1 className="text-3xl font-bold tracking-tight mb-2">
                     {mode === 'focus' ? 'Focus Mode' : 'Break Time'}
@@ -134,7 +202,7 @@ export default function StudyTimer() {
                 {/* Controls */}
                 <div className="flex items-center gap-4 mb-8">
                     <button
-                        onClick={() => setIsActive(!isActive)}
+                        onClick={toggleTimer}
                         className={clsx(
                             "w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg transition-all active:scale-95 group",
                             isActive
@@ -150,6 +218,13 @@ export default function StudyTimer() {
                         className="w-12 h-12 rounded-full glass-card hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition-all active:scale-95 group border border-slate-200 dark:border-slate-700"
                     >
                         <RotateCcw className="w-5 h-5 group-hover:-rotate-90 transition-transform" />
+                    </button>
+
+                    <button
+                        onClick={toggleFullscreen}
+                        className="w-12 h-12 rounded-full glass-card hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition-all active:scale-95 group border border-slate-200 dark:border-slate-700"
+                    >
+                        {isFullscreen ? <Minimize className="w-5 h-5 group-hover:scale-90 transition-transform" /> : <Maximize className="w-5 h-5 group-hover:scale-90 transition-transform" />}
                     </button>
                 </div>
 
