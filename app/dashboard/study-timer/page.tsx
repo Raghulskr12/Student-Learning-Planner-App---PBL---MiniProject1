@@ -2,9 +2,11 @@
 
 import { motion } from 'framer-motion';
 import { Play, Pause, RotateCcw, Settings, CheckCircle2, BookOpen, Volume2, VolumeX, Coffee, Maximize, Minimize } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import clsx from 'clsx';
+import gsap from 'gsap';
 import { AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'next/navigation';
 
 const QUOTES = [
     "The secret of your future is hidden in your daily routine.",
@@ -16,7 +18,10 @@ const QUOTES = [
     "Discipline is choosing between what you want now and what you want most."
 ];
 
-export default function StudyTimer() {
+function StudyTimerContent() {
+    const searchParams = useSearchParams();
+    const taskCtx = searchParams.get('taskCtx') || 'Data Structures';
+
     const [selectedMinutes, setSelectedMinutes] = useState(25);
     const [timeLeft, setTimeLeft] = useState(25 * 60);
     const [isActive, setIsActive] = useState(false);
@@ -25,10 +30,11 @@ export default function StudyTimer() {
     const [mode, setMode] = useState<'focus' | 'break'>('focus');
 
     const [isFullscreen, setIsFullscreen] = useState(false);
-    const [currentQuote, setCurrentQuote] = useState(QUOTES[0]);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
+    const marqueeRef = useRef<HTMLDivElement | null>(null);
+    const quotesContainerRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         // Create audio element for notification
@@ -60,13 +66,34 @@ export default function StudyTimer() {
 
     const toggleTimer = () => {
         if (!isActive) {
-            setCurrentQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
             if (mode === 'focus' && !isFullscreen) {
                 toggleFullscreen();
             }
         }
         setIsActive(!isActive);
     };
+
+    // GSAP Marquee Effect
+    useEffect(() => {
+        if (isFullscreen && isActive && mode === 'focus' && marqueeRef.current && quotesContainerRef.current) {
+            const containerWidth = quotesContainerRef.current.offsetWidth;
+
+            // Set initial position
+            gsap.set(marqueeRef.current, { x: '100vw' });
+
+            // Create continuous infinite loop tween
+            const ctx = gsap.context(() => {
+                gsap.to(marqueeRef.current, {
+                    x: -containerWidth,
+                    duration: 60, // Made it scroll a bit faster
+                    ease: "none",
+                    repeat: -1,
+                });
+            });
+
+            return () => ctx.revert();
+        }
+    }, [isFullscreen, isActive, mode]);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -112,20 +139,26 @@ export default function StudyTimer() {
                 </div>
             )}
 
-            <AnimatePresence mode="wait">
-                {isFullscreen && isActive && mode === 'focus' && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        className="absolute top-16 left-0 right-0 max-w-2xl mx-auto text-center px-4"
-                    >
-                        <p className="text-xl md:text-2xl font-medium italic text-slate-700 dark:text-slate-300 leading-relaxed">
-                            "{currentQuote}"
-                        </p>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {/* GSAP Marquee Quote Container */}
+            {isFullscreen && isActive && mode === 'focus' && (
+                <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 w-full overflow-hidden flex items-center h-40 pointer-events-none z-0 opacity-10 dark:opacity-20 select-none mix-blend-overlay">
+                    <div ref={marqueeRef} className="flex whitespace-nowrap min-w-max">
+                        <div ref={quotesContainerRef} className="flex items-center gap-32 px-32">
+                            {QUOTES.map((quote, idx) => (
+                                <span key={idx} className="text-5xl md:text-8xl font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white">
+                                    {quote}
+                                </span>
+                            ))}
+                            {/* Duplicate array for seamless infinite looping */}
+                            {QUOTES.map((quote, idx) => (
+                                <span key={`dup-${idx}`} className="text-5xl md:text-8xl font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white">
+                                    {quote}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="text-center">
                 <h1 className="text-3xl font-bold tracking-tight mb-2">
                     {mode === 'focus' ? 'Focus Mode' : 'Break Time'}
@@ -138,7 +171,7 @@ export default function StudyTimer() {
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="glass-card border border-slate-200/50 dark:border-slate-800/50 p-8 md:p-10 w-full max-w-md relative flex flex-col items-center"
+                className="glass-card border border-slate-200/50 dark:border-slate-800/50 p-8 md:p-10 w-full max-w-md relative flex flex-col items-center z-10"
             >
                 <div className="absolute top-4 right-4 flex gap-2">
                     <button
@@ -234,7 +267,7 @@ export default function StudyTimer() {
                         <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Current Focus</span>
                         <span className={clsx("flex items-center gap-1.5 font-medium", mode === 'break' ? "text-emerald-500" : "text-blue-500")}>
                             {mode === 'focus' ? <BookOpen className="w-4 h-4" /> : <Coffee className="w-4 h-4" />}
-                            {mode === 'focus' ? 'Data Structures' : 'Relaxing'}
+                            {mode === 'focus' ? taskCtx : 'Relaxing'}
                         </span>
                     </div>
                     <div className="text-right flex flex-col gap-1">
@@ -244,5 +277,13 @@ export default function StudyTimer() {
                 </div>
             </motion.div>
         </div>
+    );
+}
+
+export default function StudyTimer() {
+    return (
+        <Suspense fallback={<div className="p-10 font-bold flex justify-center mt-20">Loading Deep Work Timer...</div>}>
+            <StudyTimerContent />
+        </Suspense>
     );
 }

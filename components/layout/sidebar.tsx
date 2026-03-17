@@ -23,12 +23,11 @@ import { useState } from 'react';
 
 const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Daily Planner', href: '/dashboard/daily-planner', icon: CalendarDays },
-    { name: 'Study Timer', href: '/dashboard/study-timer', icon: Timer },
+    { name: 'Daily Agenda', href: '/dashboard/daily-planner', icon: CalendarDays },
+    { name: 'Weekly Overview', href: '/dashboard/weekly-planner', icon: Calendar },
+    { name: 'Deep Work', href: '/dashboard/study-timer', icon: Timer },
+    { name: 'Journal', href: '/dashboard/journal', icon: BookOpen },
     { name: 'Analytics', href: '/dashboard/analytics', icon: BarChartBig },
-    { name: 'Subjects', href: '/dashboard/subjects', icon: BookOpen },
-    { name: 'Goals', href: '/dashboard/goals', icon: Target },
-    { name: 'Reminders', href: '/dashboard/reminders', icon: Bell },
     { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 

@@ -1,132 +1,150 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, AreaChart, Area } from 'recharts';
-import { CalendarRange, Activity, Target } from 'lucide-react';
-
-const studyData = [
-    { name: 'Mon', hours: 4 },
-    { name: 'Tue', hours: 3 },
-    { name: 'Wed', hours: 5 },
-    { name: 'Thu', hours: 2 },
-    { name: 'Fri', hours: 6 },
-    { name: 'Sat', hours: 8 },
-    { name: 'Sun', hours: 3 },
-];
-
-const subjectData = [
-    { subject: 'DSA', progress: 85 },
-    { subject: 'OS', progress: 60 },
-    { subject: 'DBMS', progress: 75 },
-    { subject: 'Network', progress: 40 },
-];
+import { Target, Activity, Zap, Layers, Flame, CheckCircle2 } from 'lucide-react';
+import clsx from 'clsx';
 
 export default function Analytics() {
+    // Generate mock heatmap data (10 weeks x 7 days)
+    const heatmapData = Array.from({ length: 70 }, (_, i) => {
+        const value = Math.random();
+        if (value > 0.8) return 4; // Max activity
+        if (value > 0.5) return 3;
+        if (value > 0.2) return 2;
+        if (value > 0.1) return 1;
+        return 0; // Empty
+    });
+
+    const getColor = (level: number) => {
+        switch (level) {
+            case 4: return 'bg-emerald-500';
+            case 3: return 'bg-emerald-400 opacity-80';
+            case 2: return 'bg-emerald-300 opacity-60';
+            case 1: return 'bg-emerald-200 opacity-40';
+            default: return 'bg-slate-100 dark:bg-slate-800';
+        }
+    };
+
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200/50 dark:border-slate-800/50">
+        <div className="space-y-8 pb-20">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
-                    <p className="text-slate-500 mt-1">Track your progress and consistency over time.</p>
+                    <h1 className="text-3xl font-bold tracking-tight">Performance Analytics</h1>
+                    <p className="text-slate-500 mt-1">Consistency is the only metric that matters.</p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4">
-                {/* Main Chart */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                    { label: "Deep Work Total", value: "142h", sub: "+12h this month", icon: Activity, color: "text-blue-500" },
+                    { label: "Habit Score", value: "94%", sub: "Top 5% of users", icon: Target, color: "text-purple-500" },
+                    { label: "Current Streak", value: "12 Days", sub: "Personal best: 45", icon: Flame, color: "text-orange-500" },
+                    { label: "Tasks Completed", value: "847", sub: "32 this week", icon: CheckCircle2, color: "text-emerald-500" },
+                ].map((stat, i) => (
+                    <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="glass-card p-6 border border-slate-200/50 dark:border-slate-800/50"
+                    >
+                        <div className="flex items-center justify-between mb-4">
+                            <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                            <span className="text-xs font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">Last 30 Days</span>
+                        </div>
+                        <h3 className="text-4xl font-black text-slate-900 dark:text-white mb-1">{stat.value}</h3>
+                        <p className="text-slate-800 dark:text-slate-200 font-bold mb-1">{stat.label}</p>
+                        <p className="text-sm font-medium text-slate-500 flex items-center gap-1">
+                            <Zap className="w-3 h-3 text-yellow-500" /> {stat.sub}
+                        </p>
+                    </motion.div>
+                ))}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="lg:col-span-2 glass-card border border-slate-200/50 dark:border-slate-800/50 p-6 flex flex-col min-h-[400px]"
+                    transition={{ delay: 0.4 }}
+                    className="lg:col-span-2 glass-card p-8 border border-slate-200/50 dark:border-slate-800/50"
                 >
-                    <div className="flex items-center justify-between mb-8">
-                        <h2 className="text-xl font-semibold flex items-center gap-2">
-                            <CalendarRange className="w-5 h-5 text-blue-500" /> Weekly Study Hours
-                        </h2>
-                        <select className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-1.5 text-sm font-medium outline-none text-slate-700 dark:text-slate-300">
-                            <option>This Week</option>
-                            <option>Last Week</option>
-                            <option>This Month</option>
-                        </select>
+                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                        <Layers className="w-6 h-6 text-emerald-500" /> Consistency Heatmap
+                    </h2>
+                    
+                    <div className="w-full overflow-x-auto custom-scrollbar pb-4">
+                        <div className="min-w-max flex gap-2">
+                            {/* Days labels */}
+                            <div className="flex flex-col justify-between text-xs font-semibold text-slate-400 pt-1 pb-1 pr-2">
+                                <span>Mon</span>
+                                <span>Wed</span>
+                                <span>Fri</span>
+                                <span>Sun</span>
+                            </div>
+                            
+                            {/* Heatmap columns */}
+                            <div className="flex gap-2">
+                                {Array.from({ length: 10 }).map((_, colIndex) => (
+                                    <div key={colIndex} className="flex flex-col gap-2">
+                                        {Array.from({ length: 7 }).map((_, rowIndex) => {
+                                            const index = colIndex * 7 + rowIndex;
+                                            const level = heatmapData[index];
+                                            return (
+                                                <div 
+                                                    key={rowIndex} 
+                                                    title={`Activity level: ${level}`}
+                                                    className={clsx(
+                                                        "w-4 h-4 rounded-sm transition-all hover:ring-2 hover:ring-emerald-500 hover:ring-offset-1 hover:ring-offset-slate-950 cursor-pointer",
+                                                        getColor(level)
+                                                    )}
+                                                />
+                                            );
+                                        })}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
-
-                    <div className="flex-1 w-full h-full min-h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={studyData}>
-                                <defs>
-                                    <linearGradient id="colorHours" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.2} />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b' }} dy={10} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b' }} dx={-10} />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', border: 'none', borderRadius: '8px', color: '#fff' }}
-                                    itemStyle={{ color: '#fff' }}
-                                />
-                                <Area type="monotone" dataKey="hours" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorHours)" />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                    <div className="flex items-center gap-2 mt-6 text-sm font-semibold text-slate-500">
+                        <span>Less</span>
+                        <div className="flex gap-1">
+                            <div className="w-3 h-3 rounded-sm bg-slate-100 dark:bg-slate-800"></div>
+                            <div className="w-3 h-3 rounded-sm bg-emerald-200 opacity-40"></div>
+                            <div className="w-3 h-3 rounded-sm bg-emerald-300 opacity-60"></div>
+                            <div className="w-3 h-3 rounded-sm bg-emerald-400 opacity-80"></div>
+                            <div className="w-3 h-3 rounded-sm bg-emerald-500"></div>
+                        </div>
+                        <span>More</span>
                     </div>
                 </motion.div>
 
-                {/* Small Widgets */}
-                <div className="space-y-6">
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="glass-card border border-slate-200/50 dark:border-slate-800/50 p-6"
-                    >
-                        <h2 className="text-lg font-semibold flex items-center gap-2 mb-4">
-                            <Target className="w-5 h-5 text-purple-500" /> Subject Progress
-                        </h2>
-                        <div className="space-y-4">
-                            {subjectData.map((subj, i) => (
-                                <div key={i}>
-                                    <div className="flex justify-between text-sm mb-1 font-medium">
-                                        <span>{subj.subject}</span>
-                                        <span className="text-slate-500">{subj.progress}%</span>
-                                    </div>
-                                    <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                        <motion.div
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${subj.progress}%` }}
-                                            transition={{ duration: 1, delay: 0.4 }}
-                                            className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"
-                                        />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </motion.div>
+                <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="glass-card p-8 border border-slate-200/50 dark:border-slate-800/50 flex flex-col justify-center"
+                >
+                    <h2 className="text-xl font-bold mb-2">Weekly Deep Work</h2>
+                    <p className="text-slate-500 text-sm mb-8 font-medium">Your focus distribution by day</p>
 
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 }}
-                        className="glass-card border border-slate-200/50 dark:border-slate-800/50 p-6"
-                    >
-                        <h2 className="text-lg font-semibold flex items-center gap-2 mb-4">
-                            <Activity className="w-5 h-5 text-emerald-500" /> Consistency Score
-                        </h2>
-                        <div className="flex items-center justify-center py-6">
-                            <div className="relative w-32 h-32 flex items-center justify-center">
-                                <svg className="w-full h-full transform -rotate-90 absolute">
-                                    <circle cx="64" cy="64" r="60" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-100 dark:text-slate-800" />
-                                    <circle cx="64" cy="64" r="60" stroke="currentColor" strokeWidth="8" fill="transparent" strokeDasharray={60 * 2 * Math.PI} strokeDashoffset={60 * 2 * Math.PI * 0.15} className="text-emerald-500 transition-all duration-1000 ease-in-out" />
-                                </svg>
-                                <div className="text-center font-bold">
-                                    <span className="text-3xl">85</span>
-                                    <span className="text-slate-500">%</span>
+                    <div className="space-y-5">
+                        {[
+                            { day: 'Mon', h: 4, pct: 80, color: 'bg-blue-500' },
+                            { day: 'Tue', h: 3, pct: 60, color: 'bg-indigo-500' },
+                            { day: 'Wed', h: 5, pct: 100, color: 'bg-purple-500' },
+                            { day: 'Thu', h: 2, pct: 40, color: 'bg-pink-500' },
+                            { day: 'Fri', h: 3.5, pct: 70, color: 'bg-rose-500' },
+                        ].map((d, i) => (
+                            <div key={i} className="flex items-center gap-4">
+                                <span className="w-8 text-sm font-bold text-slate-500">{d.day}</span>
+                                <div className="flex-1 h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                    <div className={clsx("h-full rounded-full transition-all", d.color)} style={{ width: `${d.pct}%` }} />
                                 </div>
+                                <span className="w-8 text-right text-sm font-bold text-slate-700 dark:text-slate-300">{d.h}h</span>
                             </div>
-                        </div>
-                        <p className="text-center text-sm text-slate-500 mt-2">You are in the top 15% of consistent learners this week.</p>
-                    </motion.div>
-                </div>
+                        ))}
+                    </div>
+                </motion.div>
             </div>
         </div>
     );
