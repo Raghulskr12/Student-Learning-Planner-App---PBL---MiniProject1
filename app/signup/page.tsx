@@ -5,13 +5,32 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Calendar, Mail, Lock, User, GraduationCap, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
+import { registerUser } from '@/app/actions/auth';
+import { signIn } from 'next-auth/react';
 
 export default function SignupPage() {
     const router = useRouter();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleSignup = (e: React.FormEvent) => {
-        e.preventDefault();
-        router.push('/dashboard');
+    const handleSignup = async (formData: FormData) => {
+        setLoading(true);
+        setError('');
+
+        const res = await registerUser(formData);
+
+        if (res.error) {
+            setError(res.error);
+            setLoading(false);
+        } else {
+            // Automatically log them in after registration
+            await signIn('credentials', {
+                redirect: false,
+                email: formData.get('email') as string,
+                password: formData.get('password') as string
+            });
+            router.push('/dashboard');
+        }
     };
 
     return (
@@ -34,7 +53,12 @@ export default function SignupPage() {
                     </p>
                 </div>
 
-                <form className="space-y-5" onSubmit={handleSignup}>
+                <form className="space-y-5" action={handleSignup}>
+                    {error && (
+                        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 p-3 rounded-xl text-sm font-medium">
+                            {error}
+                        </div>
+                    )}
                     <div>
                         <label className="block text-sm font-medium mb-1.5" htmlFor="name">
                             Full Name
@@ -45,6 +69,7 @@ export default function SignupPage() {
                             </div>
                             <input
                                 id="name"
+                                name="name"
                                 type="text"
                                 required
                                 className="block w-full pl-10 pr-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -63,6 +88,7 @@ export default function SignupPage() {
                             </div>
                             <input
                                 id="email"
+                                name="email"
                                 type="email"
                                 required
                                 className="block w-full pl-10 pr-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -81,6 +107,7 @@ export default function SignupPage() {
                             </div>
                             <input
                                 id="college"
+                                name="college"
                                 type="text"
                                 className="block w-full pl-10 pr-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                 placeholder="Computer Science, MIT"
@@ -98,6 +125,7 @@ export default function SignupPage() {
                             </div>
                             <input
                                 id="password"
+                                name="password"
                                 type="password"
                                 required
                                 className="block w-full pl-10 pr-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -108,9 +136,10 @@ export default function SignupPage() {
 
                     <button
                         type="submit"
-                        className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-lg shadow-purple-500/30 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all active:scale-95 group"
+                        disabled={loading}
+                        className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-lg shadow-purple-500/30 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-pink-600 disabled:opacity-50 hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all active:scale-95 group"
                     >
-                        Create Account <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        {loading ? 'Creating...' : 'Create Account'} <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
                 </form>
 

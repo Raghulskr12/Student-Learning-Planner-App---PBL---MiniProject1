@@ -4,19 +4,33 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Calendar, Mail, Lock, LogIn, ArrowRight } from 'lucide-react';
+import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 
 export default function LoginPage() {
     const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (email === 'student' && password === 'student@123') {
-            router.push('/dashboard');
+        setLoading(true);
+        setError('');
+
+        const res = await signIn('credentials', {
+            redirect: false,
+            email,
+            password
+        });
+
+        if (res?.error) {
+            setError(res.error);
+            setLoading(false);
         } else {
-            alert('Invalid credentials. Use student / student@123');
+            router.push('/dashboard');
+            router.refresh();
         }
     };
 
@@ -44,6 +58,11 @@ export default function LoginPage() {
                 </div>
 
                 <form className="space-y-6" onSubmit={handleLogin}>
+                    {error && (
+                        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 p-3 rounded-xl text-sm font-medium">
+                            {error}
+                        </div>
+                    )}
                     <div>
                         <label className="block text-sm font-medium mb-2" htmlFor="email">
                             Username or Email
@@ -91,9 +110,10 @@ export default function LoginPage() {
 
                     <button
                         type="submit"
-                        className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-lg shadow-blue-500/30 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all active:scale-95 group"
+                        disabled={loading}
+                        className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-lg shadow-blue-500/30 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all active:scale-95 group"
                     >
-                        Sign In <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        {loading ? 'Signing in...' : 'Sign In'} <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
                 </form>
 

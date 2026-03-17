@@ -2,41 +2,43 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { CalendarDays, Plus, MoreHorizontal, X, CheckSquare, ListTodo, Timer, ChevronDown, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { getMasterRoutine, saveMasterRoutine } from '@/app/actions/routine';
 
 type Subtask = { id: number, title: string, checked: boolean };
-type RoutineTask = { id: number, title: string, checked: boolean, subtasks: Subtask[], isDeepWork?: boolean };
+type RoutineTask = { id: number, _id?: string, title: string, checked: boolean, subtasks: Subtask[], isDeepWork?: boolean };
 
 export default function DailyPlanner() {
     const router = useRouter();
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
 
     const [routine, setRoutine] = useState<Record<string, RoutineTask[]>>({
-        Morning: [
-            { id: 1, title: 'Facewash + Sunscreen', checked: true, subtasks: [] },
-            { id: 2, title: '1 egg', checked: true, subtasks: [] },
-            { id: 3, title: 'chia seeds water drink', checked: true, subtasks: [] },
-            { id: 4, title: 'gym', checked: true, subtasks: [{ id: 101, title: 'Bench Press', checked: true }, { id: 102, title: 'Cardio', checked: false }] },
-            { id: 5, title: 'Study 9 - 12:30 (Session 1)', checked: false, isDeepWork: true, subtasks: [{ id: 103, title: 'DSA Practice', checked: false }] },
-        ],
-        Afternoon: [
-            { id: 6, title: 'Study 1:30 - 4:30 (Session 2)', checked: false, isDeepWork: true, subtasks: [] },
-            { id: 7, title: '2 Eggs', checked: false, subtasks: [] },
-        ],
-        Evening: [
-            { id: 8, title: 'Shake', checked: true, subtasks: [] },
-            { id: 9, title: 'Study 5:30 - 7:45 (Session 3)', checked: false, isDeepWork: true, subtasks: [] },
-        ],
-        Night: [
-            { id: 10, title: 'Facewash + Sunscreen', checked: false, subtasks: [] },
-            { id: 11, title: 'Whey Protein', checked: false, subtasks: [] },
-            { id: 12, title: 'chia seeds water', checked: false, subtasks: [] },
-            { id: 13, title: 'Hair wash (3x week)', checked: false, subtasks: [] },
-            { id: 14, title: 'Study or revise 8:30 - (10:30-11) (Session 4)', checked: false, isDeepWork: true, subtasks: [] },
-        ]
+        Morning: [],
+        Afternoon: [],
+        Evening: [],
+        Night: []
     });
+    useEffect(() => {
+        async function loadRoutine() {
+            setLoading(true);
+            const res = await getMasterRoutine();
+            if (res.success && res.routine) {
+                const r = res.routine;
+                setRoutine({
+                    Morning: r.morning || [],
+                    Afternoon: r.afternoon || [],
+                    Evening: r.evening || [],
+                    Night: r.night || []
+                });
+            }
+            setLoading(false);
+        }
+        loadRoutine();
+    }, []);
 
     const [selectedTask, setSelectedTask] = useState<{ block: string, task: RoutineTask } | null>(null);
     const [newSubtask, setNewSubtask] = useState('');
@@ -97,6 +99,19 @@ export default function DailyPlanner() {
         router.push(`/dashboard/study-timer?taskCtx=${encodeURIComponent(selectedTask.task.title)}`);
     };
 
+    const handleSaveTemplate = async () => {
+        setSaving(true);
+        const res = await saveMasterRoutine(routine);
+        if (res.error) {
+            alert('Failed to save template. Please try again.');
+        }
+        setSaving(false);
+    };
+
+    if (loading) {
+        return <div className="p-10 text-center font-bold text-slate-500 animate-pulse mt-20">Loading Master Routine...</div>;
+    }
+
     return (
         <div className="space-y-8 relative pb-20">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -105,8 +120,12 @@ export default function DailyPlanner() {
                     <p className="text-slate-500 mt-1">Your unified template for maximum daily productivity.</p>
                 </div>
                 <div className="flex gap-2">
-                    <button className="px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl font-medium transition-colors">
-                        Save as Template
+                    <button 
+                        onClick={handleSaveTemplate}
+                        disabled={saving}
+                        className="px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl font-medium transition-colors disabled:opacity-50"
+                    >
+                        {saving ? 'Saving...' : 'Save as Template'}
                     </button>
                     <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium active:scale-95">
                         <Plus className="w-4 h-4" /> Load Template
@@ -132,7 +151,7 @@ export default function DailyPlanner() {
                         <div className="p-4 space-y-2 flex-1">
                             {tasks.map((task) => (
                                 <div 
-                                    key={task.id} 
+                                    key={task._id || task.id} 
                                     onClick={() => setSelectedTask({ block: blockName, task })}
                                     className="flex items-start gap-4 p-4 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors cursor-pointer group shadow-sm bg-white dark:bg-slate-900 relative"
                                 >

@@ -4,11 +4,14 @@ import { motion } from 'framer-motion';
 import { BookOpen, Star, Send, Moon, Trophy, Target, Activity, Coffee } from 'lucide-react';
 import { useState } from 'react';
 import clsx from 'clsx';
+import { submitJournalEntry } from '@/app/actions/journal';
 
 export default function DailyJournal() {
     const [ratings, setRatings] = useState({ workout: 0, studies: 0, diet: 0, sleep: 0 });
     const [wins, setWins] = useState('');
     const [lessons, setLessons] = useState('');
+    const [submitting, setSubmitting] = useState(false);
+    const [successMsg, setSuccessMsg] = useState('');
 
     const categories = [
         { id: 'workout', label: 'Workout & Gym', icon: Activity, color: 'text-blue-500', bg: 'hover:border-blue-500 peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/20' },
@@ -19,6 +22,19 @@ export default function DailyJournal() {
 
     const handleRating = (category: keyof typeof ratings, score: number) => {
         setRatings(prev => ({ ...prev, [category]: score }));
+    };
+
+    const handleSubmit = async () => {
+        setSubmitting(true);
+        setSuccessMsg('');
+        const res = await submitJournalEntry({ ratings, wins, lessons });
+        if (res.error) {
+            alert(res.error);
+        } else {
+            setSuccessMsg('Journal entry saved successfully for today.');
+            setTimeout(() => setSuccessMsg(''), 3000);
+        }
+        setSubmitting(false);
     };
 
     return (
@@ -98,10 +114,15 @@ export default function DailyJournal() {
                     </div>
                 </div>
 
-                <div className="flex justify-end pt-4 border-t border-slate-200 dark:border-slate-800">
-                    <button className="flex items-center gap-3 px-8 py-4 bg-slate-900 dark:bg-white hover:bg-black dark:hover:bg-slate-100 text-white dark:text-slate-900 rounded-2xl shadow-xl transition-all font-black text-lg active:scale-95 group">
+                <div className="flex flex-col items-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+                    {successMsg && <span className="text-emerald-500 font-bold text-sm bg-emerald-50 dark:bg-emerald-500/10 px-4 py-2 rounded-lg">{successMsg}</span>}
+                    <button 
+                        onClick={handleSubmit} 
+                        disabled={submitting}
+                        className="flex items-center gap-3 px-8 py-4 bg-slate-900 dark:bg-white hover:bg-black dark:hover:bg-slate-100 text-white dark:text-slate-900 rounded-2xl shadow-xl transition-all font-black text-lg active:scale-95 group disabled:opacity-50"
+                    >
                         <Send className="w-5 h-5 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" /> 
-                        Save Journal Entry
+                        {submitting ? 'Saving...' : 'Save Journal Entry'}
                     </button>
                 </div>
             </motion.div>
