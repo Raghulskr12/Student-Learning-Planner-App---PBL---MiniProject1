@@ -1,174 +1,177 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { User, Lock, Bell, Moon, Sun, Download, ChevronRight, LogOut, CheckCircle2 } from 'lucide-react';
+import { User, Bell, Shield, Key, Wand2, Smartphone, MonitorSmartphone, Mail, CheckCircle2 } from 'lucide-react';
 import { useState } from 'react';
 import clsx from 'clsx';
-import Link from 'next/link';
 
-export default function SettingsPage() {
-    const [activeTab, setActiveTab] = useState('Profile');
-    const [isDark, setIsDark] = useState(true);
-    const [notifications, setNotifications] = useState(true);
+export default function Settings() {
+    const [activeTab, setActiveTab] = useState('profile');
 
-    const tabs = ['Profile', 'Account', 'Preferences', 'Data'];
+    const tabs = [
+        { id: 'profile', icon: User, label: 'Account Profile' },
+        { id: 'preferences', icon: Wand2, label: 'App Preferences' },
+        { id: 'notifications', icon: Bell, label: 'Notifications' },
+        { id: 'security', icon: Shield, label: 'Security' },
+    ];
 
     return (
-        <div className="space-y-6 max-w-5xl mx-auto">
+        <div className="max-w-5xl mx-auto space-y-8 pb-20">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-                <p className="text-slate-500 mt-1">Manage your account, preferences, and data.</p>
+                <p className="text-slate-500 mt-1">Manage your elite productivity workspace.</p>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-8 pt-4">
-                {/* Sidebar */}
-                <div className="w-full lg:w-64 space-y-1">
+            <div className="flex flex-col md:flex-row gap-8">
+                {/* Sidebar Navigation */}
+                <div className="w-full md:w-64 shrink-0 space-y-2">
                     {tabs.map((tab) => (
                         <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
                             className={clsx(
-                                "w-full flex items-center justify-between px-4 py-3 rounded-xl text-left font-medium transition-colors",
-                                activeTab === tab
-                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+                                "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all text-left",
+                                activeTab === tab.id 
+                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" 
                                     : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
                             )}
                         >
-                            {tab}
-                            <ChevronRight className={clsx("w-4 h-4", activeTab === tab ? "opacity-100" : "opacity-0")} />
+                            <tab.icon className="w-5 h-5" />
+                            {tab.label}
                         </button>
                     ))}
-                    <div className="my-4 border-t border-slate-200 dark:border-slate-800"></div>
-                    <Link
-                        href="/login"
-                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 font-medium transition-colors"
-                    >
-                        Log Out
-                        <LogOut className="w-4 h-4" />
-                    </Link>
                 </div>
 
                 {/* Content Area */}
                 <div className="flex-1">
                     <motion.div
                         key={activeTab}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="glass-card border border-slate-200/50 dark:border-slate-800/50 p-6 sm:p-8"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="glass-card border border-slate-200/50 dark:border-slate-800/50 p-6 md:p-8"
                     >
-                        {activeTab === 'Profile' && (
+                        {activeTab === 'profile' && (
                             <div className="space-y-8">
+                                <h2 className="text-2xl font-bold mb-6">Profile Settings</h2>
                                 <div className="flex items-center gap-6">
-                                    <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white text-3xl font-bold shadow-lg">
-                                        S
+                                    <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-3xl font-bold text-white shadow-xl">
+                                        JD
                                     </div>
-                                    <div>
-                                        <h3 className="text-xl font-bold">Student</h3>
-                                        <p className="text-slate-500">student@university.edu</p>
-                                        <button className="mt-3 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm font-medium rounded-lg transition-colors border border-slate-200 dark:border-slate-700">
+                                    <div className="space-y-2">
+                                        <button className="px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-semibold hover:opacity-90 transition-opacity">
                                             Change Avatar
                                         </button>
+                                        <p className="text-sm text-slate-500">JPG, GIF or PNG. Max size of 800K</p>
                                     </div>
                                 </div>
 
-                                <div className="grid gap-6">
-                                    <div>
-                                        <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">Full Name</label>
-                                        <div className="relative">
-                                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                                            <input type="text" defaultValue="Student" className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">First Name</label>
+                                        <input type="text" defaultValue="John" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Last Name</label>
+                                        <input type="text" defaultValue="Doe" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium" />
+                                    </div>
+                                    <div className="space-y-2 md:col-span-2">
+                                        <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Email Address</label>
+                                        <div className="flex items-center relative">
+                                            <Mail className="w-5 h-5 absolute left-4 text-slate-400" />
+                                            <input type="email" defaultValue="john.doe@top1percent.com" className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium" />
                                         </div>
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">University / College</label>
-                                        <input type="text" defaultValue="MIT" className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
-                                    </div>
-                                    <button className="w-fit flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium active:scale-95">
+                                </div>
+                                <div className="flex justify-end pt-4 border-t border-slate-100 dark:border-slate-800">
+                                    <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all active:scale-95 shadow-lg shadow-blue-500/20">
                                         Save Changes
                                     </button>
                                 </div>
                             </div>
                         )}
 
-                        {activeTab === 'Preferences' && (
-                            <div className="space-y-6">
-                                <div>
-                                    <h3 className="text-lg font-bold mb-4">Appearance</h3>
-                                    <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
-                                        <div className="flex items-center gap-3">
-                                            {isDark ? <Moon className="w-5 h-5 text-blue-500" /> : <Sun className="w-5 h-5 text-yellow-500" />}
-                                            <span className="font-medium">Dark Mode</span>
+                        {activeTab === 'preferences' && (
+                            <div className="space-y-8">
+                                <h2 className="text-2xl font-bold mb-6">App Preferences</h2>
+                                
+                                <div className="space-y-6">
+                                    <div className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-900/50">
+                                        <div className="space-y-1">
+                                            <h4 className="font-bold flex items-center gap-2"><MonitorSmartphone className="w-4 h-4 text-blue-500" /> Theme Preference</h4>
+                                            <p className="text-sm text-slate-500">Choose how the app looks to you.</p>
                                         </div>
-                                        <div
-                                            className={clsx(
-                                                "relative w-12 h-6 rounded-full cursor-pointer transition-colors duration-300",
-                                                isDark ? "bg-blue-500" : "bg-slate-300 dark:bg-slate-700"
-                                            )}
-                                            onClick={() => setIsDark(!isDark)}
-                                        >
-                                            <div className={clsx(
-                                                "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform duration-300",
-                                                isDark ? "left-7" : "left-1"
-                                            )} />
-                                        </div>
+                                        <select className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none font-medium appearance-none">
+                                            <option>System Default</option>
+                                            <option>Light Mode</option>
+                                            <option>Dark Mode</option>
+                                        </select>
                                     </div>
-                                </div>
 
-                                <div>
-                                    <h3 className="text-lg font-bold mb-4">Notifications</h3>
-                                    <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
-                                        <div className="flex items-center gap-3">
-                                            <Bell className="w-5 h-5 text-purple-500" />
-                                            <span className="font-medium">Enable Push Notifications</span>
+                                    <div className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-900/50">
+                                        <div className="space-y-1">
+                                            <h4 className="font-bold flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Auto-advance Routine</h4>
+                                            <p className="text-sm text-slate-500">Automatically move to the next block when current is 100%.</p>
                                         </div>
-                                        <div
-                                            className={clsx(
-                                                "relative w-12 h-6 rounded-full cursor-pointer transition-colors duration-300",
-                                                notifications ? "bg-blue-500" : "bg-slate-300 dark:bg-slate-700"
-                                            )}
-                                            onClick={() => setNotifications(!notifications)}
-                                        >
-                                            <div className={clsx(
-                                                "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform duration-300",
-                                                notifications ? "left-7" : "left-1"
-                                            )} />
-                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" className="sr-only peer" defaultChecked />
+                                            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
                         )}
-
-                        {activeTab === 'Account' && (
-                            <div className="space-y-6">
-                                <h3 className="text-lg font-bold mb-4 text-slate-900 dark:text-white">Security Settings</h3>
+                        
+                        {activeTab === 'notifications' && (
+                            <div className="space-y-8">
+                                <h2 className="text-2xl font-bold mb-6">Notification Settings</h2>
+                                <p className="text-slate-500 mb-4">We believe in deep work. We only notify you when it truly matters.</p>
+                                
                                 <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">Current Password</label>
-                                        <input type="password" placeholder="••••••••" className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">New Password</label>
-                                        <input type="password" placeholder="••••••••" className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
-                                    </div>
-                                    <button className="w-fit flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium active:scale-95">
-                                        Update Password
-                                    </button>
+                                    {[
+                                        { title: "Daily Routine Reminder", desc: "Push notification at the start of Morning Block." },
+                                        { title: "Weekly Review Setup", desc: "Email reminder on Sunday evening to plan the week." },
+                                        { title: "Deep Work Completion", desc: "Sound chime when a Pomodoro session ends.", checked: true },
+                                    ].map((notif, i) => (
+                                        <div key={i} className="flex items-start justify-between p-4 border border-slate-200 dark:border-slate-800 rounded-2xl">
+                                            <div className="space-y-1 pr-4">
+                                                <h4 className="font-bold">{notif.title}</h4>
+                                                <p className="text-sm text-slate-500">{notif.desc}</p>
+                                            </div>
+                                            <label className="relative inline-flex items-center cursor-pointer shrink-0 mt-1">
+                                                <input type="checkbox" className="sr-only peer" defaultChecked={notif.checked} />
+                                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                            </label>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         )}
 
-                        {activeTab === 'Data' && (
-                            <div className="space-y-6 text-center">
-                                <div className="w-16 h-16 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-500 mx-auto mt-4 mb-4 shadow-lg shadow-blue-500/20">
-                                    <Download className="w-8 h-8" />
+                        {activeTab === 'security' && (
+                            <div className="space-y-8">
+                                <h2 className="text-2xl font-bold mb-6">Security & Login</h2>
+                                
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Current Password</label>
+                                        <input type="password" placeholder="••••••••" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium" />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">New Password</label>
+                                            <input type="password" placeholder="••••••••" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Confirm Password</label>
+                                            <input type="password" placeholder="••••••••" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium" />
+                                        </div>
+                                    </div>
+                                    <div className="pt-4">
+                                        <button className="px-6 py-3 bg-slate-900 dark:bg-white hover:bg-black dark:hover:bg-slate-100 text-white dark:text-slate-900 rounded-xl font-bold transition-all active:scale-95 shadow-lg">
+                                            Update Password
+                                        </button>
+                                    </div>
                                 </div>
-                                <h3 className="text-xl font-bold">Export Your Data</h3>
-                                <p className="text-slate-500 max-w-sm mx-auto">
-                                    Download a complete archive of your tasks, habits, study sessions, and analytics in CSV format.
-                                </p>
-                                <button className="mt-6 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium active:scale-95 mx-auto">
-                                    Request Data Archive
-                                </button>
                             </div>
                         )}
                     </motion.div>

@@ -16,28 +16,28 @@ export default function Navbar() {
     if (pathname.startsWith('/dashboard')) return null;
 
     return (
-        <nav className="fixed top-0 w-full z-50 glass-nav">
+        <nav className="fixed top-0 w-full z-50 glass-nav shadow-sm border-b border-slate-200/50 dark:border-slate-800/50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between h-16">
+                <div className="flex justify-between h-20"> {/* increased height slightly */}
                     <div className="flex items-center">
-                        <Link href="/" className="flex-shrink-0 flex items-center gap-2">
-                            <span className="font-bold text-xl tracking-tight text-slate-900 dark:text-white">
-                                The <span className="text-red-500">1%</span> Club
+                        <Link href="/" className="flex-shrink-0 flex items-center gap-2 group">
+                            <span className="font-extrabold text-2xl tracking-tight text-slate-900 dark:text-white transition-opacity group-hover:opacity-80">
+                                The <span className="text-blue-600 dark:text-blue-500">1%</span> Club
                             </span>
                         </Link>
                     </div>
 
-                    <div className="hidden md:flex items-center space-x-8">
-                        <Link href="/#features" className="text-slate-600 dark:text-slate-300 hover:text-blue-500 dark:hover:text-blue-400 transition-colors font-medium">Features</Link>
-                        <Link href="/#testimonials" className="text-slate-600 dark:text-slate-300 hover:text-blue-500 dark:hover:text-blue-400 transition-colors font-medium">Testimonials</Link>
-                        <div className="flex items-center space-x-4">
-                            <Link href="/login" className="flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition">
+                    <div className="hidden md:flex items-center space-x-1">
+                        <Link href="/#features" className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-all font-bold text-sm">Features</Link>
+                        <Link href="/#testimonials" className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-all font-bold text-sm">Testimonials</Link>
+                        <div className="flex items-center space-x-3 pl-4 border-l border-slate-200 dark:border-slate-800 ml-4">
+                            <Link href="/login" className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-sm transition-all">
                                 <LogIn className="w-4 h-4" />
                                 Login
                             </Link>
-                            <Link href="/signup" className="flex items-center gap-2 px-5 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all shadow-lg hover:shadow-blue-500/25 active:scale-95">
+                            <Link href="/signup" className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-slate-900 dark:bg-white hover:bg-black dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-sm transition-all shadow-lg active:scale-95">
                                 <User className="w-4 h-4" />
-                                Sign Up
+                                Start Free
                             </Link>
                         </div>
                     </div>

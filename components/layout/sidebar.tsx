@@ -45,12 +45,12 @@ export default function Sidebar() {
             <div className="flex items-center justify-between p-4 border-b border-slate-200/50 dark:border-slate-800/50">
                 {!collapsed && (
                     <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
-                        <span className="font-bold text-lg tracking-tight">The <span className="text-red-500">1%</span> Club</span>
+                        <span className="font-extrabold text-xl tracking-tight">The <span className="text-blue-600 dark:text-blue-500">1%</span> Club</span>
                     </div>
                 )}
                 {collapsed && (
-                    <div className="w-8 h-8 mx-auto rounded-lg flex items-center justify-center shrink-0">
-                        <span className="font-bold text-red-500">1%</span>
+                    <div className="w-8 h-8 mx-auto rounded-lg flex items-center justify-center shrink-0 bg-blue-500/10">
+                        <span className="font-extrabold text-blue-600 dark:text-blue-500">1%</span>
                     </div>
                 )}
                 <button
