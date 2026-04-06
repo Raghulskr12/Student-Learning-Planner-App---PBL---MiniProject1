@@ -6,6 +6,8 @@ export interface ISubtask {
 
 export interface IRoutineTask {
   title: string;
+  startTime?: string;
+  endTime?: string;
   isDeepWork: boolean;
   subtasks: ISubtask[];
 }
@@ -27,6 +29,8 @@ const SubtaskSchema = new Schema<ISubtask>({
 
 const RoutineTaskSchema = new Schema<IRoutineTask>({
   title: { type: String, required: true },
+  startTime: { type: String, default: '' },
+  endTime: { type: String, default: '' },
   isDeepWork: { type: Boolean, default: false },
   subtasks: [SubtaskSchema],
 });

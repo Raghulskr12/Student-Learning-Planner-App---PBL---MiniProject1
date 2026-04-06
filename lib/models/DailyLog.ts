@@ -7,6 +7,8 @@ export interface IDailySubtask {
 
 export interface IDailyRoutineTask {
   title: string;
+  startTime?: string;
+  endTime?: string;
   isDeepWork: boolean;
   checked: boolean;
   subtasks: IDailySubtask[];
@@ -14,7 +16,7 @@ export interface IDailyRoutineTask {
 
 export interface IDailyLog extends Document {
   userId: mongoose.Types.ObjectId;
-  date: Date; // e.g., Set to midnight of the specific day
+  date: Date; // Set to midnight of the specific day
   morning: IDailyRoutineTask[];
   afternoon: IDailyRoutineTask[];
   evening: IDailyRoutineTask[];
@@ -30,6 +32,8 @@ const DailySubtaskSchema = new Schema<IDailySubtask>({
 
 const DailyRoutineTaskSchema = new Schema<IDailyRoutineTask>({
   title: { type: String, required: true },
+  startTime: { type: String, default: '' },
+  endTime: { type: String, default: '' },
   isDeepWork: { type: Boolean, default: false },
   checked: { type: Boolean, default: false },
   subtasks: [DailySubtaskSchema],

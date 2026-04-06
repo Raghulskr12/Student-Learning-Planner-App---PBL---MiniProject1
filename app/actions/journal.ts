@@ -6,6 +6,33 @@ import { AnalyticsActivity } from "@/lib/models/AnalyticsActivity";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
+export async function getTodayJournalEntry() {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user) return { error: "Unauthorized" };
+
+        await connectToDatabase();
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const entry = await Journal.findOne({
+            userId: (session.user as any).id,
+            date: { $gte: today, $lt: tomorrow }
+        }).lean();
+
+        return {
+            success: true,
+            data: entry ? JSON.parse(JSON.stringify(entry)) : null
+        };
+    } catch (e: any) {
+        console.error("Error fetching journal:", e);
+        return { error: "Failed to load journal entry" };
+    }
+}
+
 export async function submitJournalEntry(data: {
     ratings: { workout: number; studies: number; diet: number; sleep: number };
     wins: string;
@@ -42,16 +69,24 @@ export async function submitJournalEntry(data: {
         else if (habitScoreRatio > 0.4) habitScore = 2;
         else if (habitScoreRatio > 0.1) habitScore = 1;
 
-        // Upsert Analytics Activity for today
-        await AnalyticsActivity.findOneAndUpdate(
-            { userId: (session.user as any).id, date: today },
-            { 
-                userId: (session.user as any).id, 
+        // Upsert Analytics Activity for today (preserve existing deepWork, tasks)
+        const existing = await AnalyticsActivity.findOne({
+            userId: (session.user as any).id,
+            date: today
+        });
+
+        if (existing) {
+            existing.habitScore = habitScore;
+            await existing.save();
+        } else {
+            await AnalyticsActivity.create({
+                userId: (session.user as any).id,
                 date: today,
-                habitScore: habitScore
-            },
-            { upsert: true, new: true }
-        );
+                habitScore,
+                deepWorkMinutes: 0,
+                tasksCompleted: 0
+            });
+        }
 
         return { success: true };
     } catch (e: any) {
