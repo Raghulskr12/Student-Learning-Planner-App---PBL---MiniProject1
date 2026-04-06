@@ -1,0 +1,25 @@
+﻿
+D:\student activity planner\student-daily-planner\app\actions\dashboard.ts
+  24:13  error  'dailyLog' is never reassigned. Use 'const' instead  prefer-const
+
+D:\student activity planner\student-daily-planner\app\dashboard\study-timer\page.tsx
+  116:8   warning  React Hook useEffect has a missing dependency: 'selectedMinutes'. Either include it or remove the dependency array. You can also replace multiple useState variables with useReducer if 'setTotalMinutes' needs the current value of 'selectedMinutes'                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+  140:41  error    Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+D:\student activity planner\student-daily-planner\app\dashboard\study-timer\page.tsx:140:41
+  138 |     const handleReset = () => {
+  139 |         if (isActive && mode === 'focus' && sessionStartRef.current) {
+> 140 |             const elapsed = Math.round((Date.now() - sessionStartRef.current) / 60000);
+      |                                         ^^^^^^^^^^ Cannot call impure function
+  141 |             if (elapsed >= 1) saveCompletedSession(elapsed);
+  142 |         }
+  143 |         setIsActive(false);  react-hooks/purity
+
+D:\student activity planner\student-daily-planner\app\login\page.tsx
+  131:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+Γ£û 4 problems (2 errors, 2 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+
